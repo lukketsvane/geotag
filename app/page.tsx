@@ -3,7 +3,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import RootLayout from './layout';
 
-const MapWithNoSSR = dynamic(() => import('./components/MapComponent.tsx'), {
+const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
 });
 
