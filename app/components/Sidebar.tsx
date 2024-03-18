@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { FaHome, FaUserFriends, FaMapMarkerAlt, FaHashtag, FaTags, FaCog, FaSignOutAlt } from 'react-icons/fa';
 
