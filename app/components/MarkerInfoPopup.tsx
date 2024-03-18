@@ -5,8 +5,8 @@ import styles from './MapComponent.module.css';
 
 interface MarkerInfoPopupProps {
   selectedMarker: Marker;
-  markerInfo: { [key: string]: { title: string; description: string } };
-  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+  markerInfo: { [key: string]: {  string;  string } };
+  onSaveMarkerInfo: (marker: Marker,  string,  string) => void;
   onMarkerClick: (marker: Marker | null) => void;
 }
 
@@ -48,20 +48,22 @@ const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
           </div>
           {info ? (
             <div className="mb-4">
-              <p className="text-gray-600">Title:</p>
+              <p className="text-gray-600"></p>
               <p>{info.title}</p>
-              <p className="text-gray-600">Description:</p>
+              <p className="text-gray-600"></p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600">
+                  
                 </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-600">
+                  
                 </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
