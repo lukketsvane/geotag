@@ -44,31 +44,31 @@ const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
         <div className="leaflet-popup-content">
           <h2 className="text-lg font-bold mb-2">{locationName}</h2>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Latitude:</p>
             <p>{selectedMarker.getLatLng().lat}</p>
           </div>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Longitude:</p>
             <p>{selectedMarker.getLatLng().lng}</p>
           </div>
           {info ? (
             <div className="mb-4">
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Title:</p>
               <p>{info.title}</p>
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Description:</p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600">
-                  
+                  Title:
                 </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-600">
-                  
+                  Description:
                 </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
