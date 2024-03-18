@@ -47,22 +47,22 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
           </div>
           {info ? (
             <div className="mb-4">
-              <p className="text-gray-600">Title:</p>
+              <p className="text-gray-600"></p>
               <p>{info.title}</p>
-              <p className="text-gray-600">Description:</p>
+              <p className="text-gray-600"></p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600">
-                  Title:
+                  
                 </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-600">
-                  Description:
+                  
                 </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
