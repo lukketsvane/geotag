@@ -1,16 +1,31 @@
+// app/components/MarkerInfoCard.tsx
 import React from 'react';
+import { Marker } from 'leaflet';
+import styles from './MapComponent.module.css';
 
-const MarkerInfoPopup: React.FC = ({ selectedMarker, markerInfo, onSaveMarkerInfo, onMarkerClick }) => {
+interface MarkerInfoCardProps {
+  selectedMarker: Marker;
+  markerInfo: { [key: string]: { title: string; description: string } };
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+  onMarkerClick: (marker: Marker | null) => void;
+}
+
+const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
+  selectedMarker,
+  markerInfo,
+  onSaveMarkerInfo,
+  onMarkerClick,
+}) => {
   const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
   const info = markerInfo[markerKey];
 
   return (
-    <div className="leaflet-popup">
+    <div className={`leaflet-popup ${styles.infoCard}`}>
       <div className="leaflet-popup-content-wrapper">
         <div className="leaflet-popup-content">
           <h2 className="text-lg font-bold mb-2">Marker Information</h2>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Latitude:</p>
             <p>{selectedMarker.getLatLng().lat}</p>
           </div>
           <div className="mb-4">
@@ -18,18 +33,24 @@ const MarkerInfoPopup: React.FC = ({ selectedMarker, markerInfo, onSaveMarkerInf
             <p>{selectedMarker.getLatLng().lng}</p>
           </div>
           {info ? (
-            <div className="bg-gray-100 p-4 rounded">
-              <h3 className="text-lg font-bold mb-2">{info.title}</h3>
+            <div className="mb-4">
+              <p className="text-gray-600">Title:</p>
+              <p>{info.title}</p>
+              <p className="text-gray-600">Description:</p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-600">Title:</label>
+                <label htmlFor="title" className="block text-gray-600">
+                  Title:
+                </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-gray-600">Description:</label>
+                <label htmlFor="description" className="block text-gray-600">
+                  Description:
+                </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
               <div className="flex justify-end">
@@ -61,4 +82,4 @@ const MarkerInfoPopup: React.FC = ({ selectedMarker, markerInfo, onSaveMarkerInf
   );
 };
 
-export default MarkerInfoPopup;
+export default MarkerInfoCard;

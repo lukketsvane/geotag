@@ -1,11 +1,25 @@
+// app/components/MapComponent.tsx
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Map } from 'leaflet';
+import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
+import MarkerInfoCard from './MarkerInfoCard';
 
-const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onSaveMarkerInfo }) => {
+interface MapComponentProps {
+  selectedMarker: Marker | null;
+  markerInfo: { [key: string]: { title: string; description: string } };
+  onMarkerClick: (marker: Marker | null) => void;
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+}
+
+const MapComponent: React.FC<MapComponentProps> = ({
+  selectedMarker,
+  markerInfo,
+  onMarkerClick,
+  onSaveMarkerInfo,
+}) => {
   const mapRef = useRef<Map | null>(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
 
@@ -23,12 +37,12 @@ const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onS
       mapRef.current = map;
 
       L.control.zoom({
-        position: 'topright'
+        position: 'topright',
       }).addTo(map);
 
       const customControl = L.Control.extend({
         options: {
-          position: 'topright'
+          position: 'topright',
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
@@ -38,9 +52,9 @@ const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onS
           button.style.height = '30px';
           button.onclick = function () {
             setMarkerPlacementActive(!markerPlacementActive);
-          }
+          };
           return button;
-        }
+        },
       });
 
       map.addControl(new customControl());
@@ -62,6 +76,7 @@ const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onS
               iconSize: [20, 20],
             }),
           }).addTo(map);
+
           marker.on('click', function () {
             onMarkerClick(marker);
           });
@@ -78,6 +93,7 @@ const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onS
               iconSize: [20, 20],
             }),
           }).addTo(map);
+
           marker.on('click', function () {
             onMarkerClick(marker);
           });
@@ -86,72 +102,16 @@ const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onS
     }
   }, [markerPlacementActive, onMarkerClick]);
 
-  useEffect(() => {
-    if (selectedMarker) {
-      const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
-      const info = markerInfo[markerKey];
-      if (info) {
-        (document.getElementById('title') as HTMLInputElement).value = info.title;
-        (document.getElementById('description') as HTMLTextAreaElement).value = info.description;
-        (document.getElementById('title') as HTMLInputElement).readOnly = true;
-        (document.getElementById('description') as HTMLTextAreaElement).readOnly = true;
-      } else {
-        (document.getElementById('title') as HTMLInputElement).value = '';
-        (document.getElementById('description') as HTMLTextAreaElement).value = '';
-        (document.getElementById('title') as HTMLInputElement).readOnly = false;
-        (document.getElementById('description') as HTMLTextAreaElement).readOnly = false;
-      }
-    }
-  }, [selectedMarker, markerInfo]);
-
   return (
     <div>
       <div id="map" style={{ height: '100vh', width: '100%' }} />
       {selectedMarker && (
-        <div className={`leaflet-popup ${styles.infoCard}`}>
-          <div className="leaflet-popup-content-wrapper">
-            <div className="leaflet-popup-content">
-              <h2 className="text-lg font-bold mb-2">Marker Information</h2>
-              <div className="mb-4">
-                <p className="text-gray-600">Latitude:</p>
-                <p>{selectedMarker.getLatLng().lat}</p>
-              </div>
-              <div className="mb-4">
-                <p className="text-gray-600">Longitude:</p>
-                <p>{selectedMarker.getLatLng().lng}</p>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-600">Title:</label>
-                <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-gray-600">Description:</label>
-                <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={() => {
-                    const title = (document.getElementById('title') as HTMLInputElement).value;
-                    const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-                    onSaveMarkerInfo(selectedMarker, title, description);
-                  }}
-                >
-                  Save
-                </button>
-                <button
-                  className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  onClick={() => onMarkerClick(null)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="leaflet-popup-tip-container">
-            <div className="leaflet-popup-tip"></div>
-          </div>
-        </div>
+        <MarkerInfoCard
+          selectedMarker={selectedMarker}
+          markerInfo={markerInfo}
+          onSaveMarkerInfo={onSaveMarkerInfo}
+          onMarkerClick={onMarkerClick}
+        />
       )}
     </div>
   );
