@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// app/components/MarkerInfoCard.tsx
+import React from 'react';
 import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 
@@ -17,20 +18,6 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
 }) => {
   const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
   const info = markerInfo[markerKey];
-  const [placeInfo, setPlaceInfo] = useState<{ country: string; city: string } | null>(null);
-
-  useEffect(() => {
-    const fetchPlaceInfo = async () => {
-      const { lat, lng } = selectedMarker.getLatLng();
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-      const data = await response.json();
-      const country = data.address.country;
-      const city = data.address.city || data.address.town || data.address.village;
-      setPlaceInfo({ country, city });
-    };
-
-    fetchPlaceInfo();
-  }, [selectedMarker]);
 
   return (
     <div className={`leaflet-popup ${styles.infoCard}`}>
@@ -47,16 +34,16 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
           </div>
           {info ? (
             <div className="mb-4">
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Title:</p>
               <p>{info.title}</p>
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Description:</p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600">
-                  
+                  Title:
                 </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
