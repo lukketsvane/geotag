@@ -3,25 +3,33 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar';
+import L, { Marker } from 'leaflet'; // Import Marker from leaflet
 
 const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
 });
 
-const MainPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [markerInfo, setMarkerInfo] = useState({});
+interface MarkerInfo {
+  [key: string]: {
+    title: string;
+    description: string;
+  };
+}
 
-  const handleMarkerClick = (marker) => {
+const MainPage = () => {
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
+  const [markerInfo, setMarkerInfo] = useState<MarkerInfo>({});
+
+  const handleMarkerClick = (marker: Marker) => {
     setSelectedMarker(marker);
   };
 
-  const handleSaveMarkerInfo = (marker, title, description) => {
+  const handleSaveMarkerInfo = (marker: Marker, title: string, description: string) => {
     const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
-    setMarkerInfo(prevInfo => ({
+    setMarkerInfo((prevInfo) => ({
       ...prevInfo,
-      [markerKey]: { title, description }
+      [markerKey]: { title, description },
     }));
     setSelectedMarker(null);
   };
