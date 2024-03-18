@@ -5,7 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
-import MarkerInfoCard from './MarkerInfoCard';
+import MarkerInfoPopup from './MarkerInfoPopup';
 
 interface MapComponentProps {
   selectedMarker: Marker | null;
@@ -106,7 +106,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     <div>
       <div id="map" style={{ height: '100vh', width: '100%' }} />
       {selectedMarker && (
-        <MarkerInfoCard
+        <MarkerInfoPopup
           selectedMarker={selectedMarker}
           markerInfo={markerInfo}
           onSaveMarkerInfo={onSaveMarkerInfo}

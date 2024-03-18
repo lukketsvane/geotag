@@ -1,35 +1,70 @@
-import React from 'react';
+// app/components/MarkerInfoPopup.tsx
+import React, { useEffect, useState } from 'react';
+import { Marker } from 'leaflet';
+import styles from './MapComponent.module.css';
 
-const MarkerInfoPopup: React.FC = ({ selectedMarker, markerInfo, onSaveMarkerInfo, onMarkerClick }) => {
+interface MarkerInfoPopupProps {
+  selectedMarker: Marker;
+  markerInfo: { [key: string]: { title: string; description: string } };
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+  onMarkerClick: (marker: Marker | null) => void;
+}
+
+const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
+  selectedMarker,
+  markerInfo,
+  onSaveMarkerInfo,
+  onMarkerClick,
+}) => {
   const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
   const info = markerInfo[markerKey];
+  const [locationName, setLocationName] = useState('');
+
+  useEffect(() => {
+    const fetchLocationName = async () => {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${selectedMarker.getLatLng().lat}&lon=${selectedMarker.getLatLng().lng}`
+      );
+      const data = await response.json();
+      const { country, city } = data.address;
+      setLocationName(`${city}, ${country}`);
+    };
+
+    fetchLocationName();
+  }, [selectedMarker]);
 
   return (
-    <div className="leaflet-popup">
+    <div className={`leaflet-popup ${styles.infoCard}`}>
       <div className="leaflet-popup-content-wrapper">
         <div className="leaflet-popup-content">
-          <h2 className="text-lg font-bold mb-2">Marker Information</h2>
+          <h2 className="text-lg font-bold mb-2">{locationName}</h2>
           <div className="mb-4">
             <p className="text-gray-600"></p>
             <p>{selectedMarker.getLatLng().lat}</p>
           </div>
           <div className="mb-4">
-            <p className="text-gray-600">Longitude:</p>
+            <p className="text-gray-600"></p>
             <p>{selectedMarker.getLatLng().lng}</p>
           </div>
           {info ? (
-            <div className="bg-gray-100 p-4 rounded">
-              <h3 className="text-lg font-bold mb-2">{info.title}</h3>
+            <div className="mb-4">
+              <p className="text-gray-600">Title:</p>
+              <p>{info.title}</p>
+              <p className="text-gray-600">Description:</p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-600">Title:</label>
+                <label htmlFor="title" className="block text-gray-600">
+                  Title:
+                </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-gray-600">Description:</label>
+                <label htmlFor="description" className="block text-gray-600">
+                  Description:
+                </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
               <div className="flex justify-end">
