@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client";
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -10,9 +11,6 @@ const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
     <div className={`${isOpen ? 'w-64' : 'w-0'} fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out bg-black text-white overflow-hidden`}>
-      <div className="flex justify-end p-4">
-        {/* This button is now removed from here */}
-      </div>
       <nav className={`${isOpen ? 'flex' : 'hidden'} flex-col p-4 space-y-4`}>
         <a href="#" className="hover:text-gray-300">Home</a>
         <a href="#" className="hover:text-gray-300">Friends</a>

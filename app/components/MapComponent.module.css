@@ -1,0 +1,19 @@
+/* app/components/MapComponent.module.css */
+.infoCard {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 1000; /* High z-index to ensure it's on top */
+    max-width: 20rem;
+  }
+  
+  .mapContainer {
+    height: 100vh;
+    width: 100%;
+    z-index: 0; /* Explicitly setting z-index for the map container */
+  }
+  
