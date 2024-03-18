@@ -1,3 +1,4 @@
+// app/components/MapComponent.tsx
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
