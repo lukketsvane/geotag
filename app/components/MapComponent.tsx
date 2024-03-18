@@ -44,7 +44,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
       const customControl = L.Control.extend({
         options: {
-          position: 'topleft',
+          position: 'topright',
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
