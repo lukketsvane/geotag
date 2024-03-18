@@ -25,7 +25,7 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
         <div className="leaflet-popup-content">
           <h2 className="text-lg font-bold mb-2">Marker Information</h2>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Latitude:</p>
             <p>{selectedMarker.getLatLng().lat}</p>
           </div>
           <div className="mb-4">
