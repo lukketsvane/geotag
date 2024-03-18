@@ -104,30 +104,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
           });
         }
       });
-
-      // Load saved markers from localStorage
-      const savedMarkers = JSON.parse(localStorage.getItem('markers') || '{}');
-      Object.entries(savedMarkers).forEach(([key, value]) => {
-        const [lat, lng] = key.split(',');
-        const marker = L.marker([parseFloat(lat), parseFloat(lng)], {
-          icon: L.divIcon({
-            className: 'emoji-icon',
-            html: '📍',
-            iconSize: [20, 20],
-          }),
-        }).addTo(map);
-
-        marker.on('click', function () {
-          onMarkerClick(marker);
-        });
-      });
     }
   }, [markerPlacementActive, onMarkerClick]);
-
-  // Save marker info to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('markers', JSON.stringify(markerInfo));
-  }, [markerInfo]);
 
   return (
     <div>
