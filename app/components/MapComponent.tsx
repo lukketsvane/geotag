@@ -1,4 +1,3 @@
-// app/components/MapComponent.tsx
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
@@ -7,9 +6,14 @@ import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
+interface MarkerInfo {
+  title: string;
+  description: string;
+}
+
 interface MapComponentProps {
   selectedMarker: Marker | null;
-  markerInfo: { [key: string]: { title: string; description: string } };
+  markerInfo: { [key: string]: MarkerInfo };
   onMarkerClick: (marker: Marker | null) => void;
   onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
 }
