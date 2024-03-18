@@ -33,7 +33,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const map = L.map('map', {
         center: [0, 0],
         zoom: 2,
-        zoomControl: true, // Disable the default zoom controls
+        zoomControl: false, // Disable the default zoom controls
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

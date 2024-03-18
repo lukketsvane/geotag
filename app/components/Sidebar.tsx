@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, onSignOut }) =
               alt="User Avatar"
               className="w-10 h-10 rounded-full mr-2"
             />
-            <span>Michael Calder</span>
+            <span>Brage Brageson</span>
           </div>
           <button
             className="text-gray-500 hover:text-white focus:outline-none"
