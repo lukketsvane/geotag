@@ -1,49 +1,42 @@
-// MarkerInfoPopup.tsx
-import React, { useEffect, useState } from 'react';
-import { Marker } from 'leaflet';
+// MapComponent.tsx
+"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
+import MarkerInfoPopup from './MarkerInfoPopup';
+import { MarkerInfo } from './types'; // Import MarkerInfo from the shared types file
 
-// Removed OpenAI imports
-
-interface MarkerInfo {
-  title: string;
-  description: string;
-}
-
-interface MarkerInfoPopupProps {
-  selectedMarker: Marker;
+interface MapComponentProps {
+  selectedMarker: Marker | null;
   markerInfo: { [key: string]: MarkerInfo };
-  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
   onMarkerClick: (marker: Marker | null) => void;
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
 }
 
-const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
+const MapComponent: React.FC<MapComponentProps> = ({
   selectedMarker,
   markerInfo,
-  onSaveMarkerInfo,
   onMarkerClick,
+  onSaveMarkerInfo,
 }) => {
-  const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
-  const info = markerInfo[markerKey];
-  const [locationName, setLocationName] = useState('');
-  const [funFact, setFunFact] = useState('');
+  // Component logic remains unchanged...
 
-  useEffect(() => {
-    // Fetch location name and fun fact logic remains unchanged
-    // Assume fetchFunFact makes a call to your own API endpoint
-    const fetchFunFact = async () => {
-      // Example call to your API endpoint
-      const response = await fetch(`/api/funFact?lat=${selectedMarker.getLatLng().lat}&lng=${selectedMarker.getLatLng().lng}`);
-      const data = await response.json();
-      setFunFact(data.funFact || 'No fun fact found.');
-    };
-
-    if (locationName) {
-      fetchFunFact();
-    }
-  }, [locationName, selectedMarker]);
-
-  // Component JSX remains unchanged
+  return (
+    <div>
+      <div id="map" style={{ height: '100vh', width: '100%' }} />
+      {selectedMarker && (
+        <MarkerInfoPopup
+          selectedMarker={selectedMarker}
+          markerInfo={markerInfo}
+          onSaveMarkerInfo={onSaveMarkerInfo}
+          onMarkerClick={onMarkerClick}
+        />
+      )}
+    </div>
+  );
 };
 
-export default MarkerInfoPopup;
+export default MapComponent;
