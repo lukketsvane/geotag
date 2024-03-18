@@ -1,11 +1,9 @@
-// app/page.tsx
 "use client";
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar';
-import L, { Marker } from 'leaflet'; // Import Marker from leaflet
-import { useRouter } from 'next/navigation';
+import L, { Marker } from 'leaflet';
 
 const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
@@ -19,7 +17,6 @@ interface MarkerInfo {
 }
 
 const MainPage = () => {
-  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
   const [markerInfo, setMarkerInfo] = useState<MarkerInfo>({});
@@ -37,9 +34,18 @@ const MainPage = () => {
     setSelectedMarker(null);
   };
 
+  const handleSignOut = () => {
+    // Add your sign-out logic here
+    console.log('User signed out');
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} router={router} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        onSignOut={handleSignOut}
+      />
       <div className={`relative flex-grow ${sidebarOpen ? 'ml-64' : 'ml-0'} transition-margin duration-300 ease-in-out`}>
         <div className="fixed bottom-0 left-0 z-50 p-4">
           <button
