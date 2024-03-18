@@ -3,10 +3,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Map, Marker } from 'leaflet';
+import { Marker, Map } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
+// Correct the type definition for markerInfo
 interface MarkerInfo {
   title: string;
   description: string;
@@ -14,7 +15,7 @@ interface MarkerInfo {
 
 interface MapComponentProps {
   selectedMarker: Marker | null;
-  markerInfo: { [key: string]: MarkerInfo };
+  markerInfo: { [key: string]: MarkerInfo }; // Use the corrected MarkerInfo type
   onMarkerClick: (marker: Marker | null) => void;
   onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
 }
@@ -113,7 +114,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       {selectedMarker && (
         <MarkerInfoPopup
           selectedMarker={selectedMarker}
-          markerInfo={markerInfo}
+          markerInfo={markerInfo[selectedMarker.getLatLng().toString()]} // Pass the specific marker info
           onSaveMarkerInfo={onSaveMarkerInfo}
           onMarkerClick={onMarkerClick}
         />
