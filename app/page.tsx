@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -28,6 +27,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
 const MainPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [markerInfo, setMarkerInfo] = useState({});
+
+  const handleMarkerClick = (marker) => {
+    setSelectedMarker(marker);
+  };
+
+  const handleSaveMarkerInfo = (marker, title, description) => {
+    const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
+    setMarkerInfo(prevInfo => ({
+      ...prevInfo,
+      [markerKey]: { title, description }
+    }));
+    setSelectedMarker(null);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -42,7 +56,12 @@ const MainPage = () => {
             {sidebarOpen ? <X color="white" size={24} /> : <Menu color="white" size={24} />}
           </button>
         </div>
-        <MapWithNoSSR />
+        <MapWithNoSSR
+          selectedMarker={selectedMarker}
+          markerInfo={markerInfo}
+          onMarkerClick={handleMarkerClick}
+          onSaveMarkerInfo={handleSaveMarkerInfo}
+        />
       </div>
     </div>
   );

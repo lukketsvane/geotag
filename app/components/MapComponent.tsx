@@ -5,11 +5,9 @@ import 'leaflet/dist/leaflet.css';
 import { Map } from 'leaflet';
 import styles from './MapComponent.module.css';
 
-const MapComponent: React.FC = () => {
+const MapComponent: React.FC = ({ selectedMarker, markerInfo, onMarkerClick, onSaveMarkerInfo }) => {
   const mapRef = useRef<Map | null>(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
-  const [selectedMarker, setSelectedMarker] = useState<L.Marker | null>(null);
-  const [markerInfo, setMarkerInfo] = useState<{ [key: string]: { title: string; description: string } }>({});
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -65,20 +63,7 @@ const MapComponent: React.FC = () => {
             }),
           }).addTo(map);
           marker.on('click', function () {
-            setSelectedMarker(marker);
-            const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
-            const info = markerInfo[markerKey];
-            if (info) {
-              (document.getElementById('title') as HTMLInputElement).value = info.title;
-              (document.getElementById('description') as HTMLTextAreaElement).value = info.description;
-              (document.getElementById('title') as HTMLInputElement).readOnly = true;
-              (document.getElementById('description') as HTMLTextAreaElement).readOnly = true;
-            } else {
-              (document.getElementById('title') as HTMLInputElement).value = '';
-              (document.getElementById('description') as HTMLTextAreaElement).value = '';
-              (document.getElementById('title') as HTMLInputElement).readOnly = false;
-              (document.getElementById('description') as HTMLTextAreaElement).readOnly = false;
-            }
+            onMarkerClick(marker);
           });
         }
       });
@@ -94,25 +79,30 @@ const MapComponent: React.FC = () => {
             }),
           }).addTo(map);
           marker.on('click', function () {
-            setSelectedMarker(marker);
-            const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
-            const info = markerInfo[markerKey];
-            if (info) {
-              (document.getElementById('title') as HTMLInputElement).value = info.title;
-              (document.getElementById('description') as HTMLTextAreaElement).value = info.description;
-              (document.getElementById('title') as HTMLInputElement).readOnly = true;
-              (document.getElementById('description') as HTMLTextAreaElement).readOnly = true;
-            } else {
-              (document.getElementById('title') as HTMLInputElement).value = '';
-              (document.getElementById('description') as HTMLTextAreaElement).value = '';
-              (document.getElementById('title') as HTMLInputElement).readOnly = false;
-              (document.getElementById('description') as HTMLTextAreaElement).readOnly = false;
-            }
+            onMarkerClick(marker);
           });
         }
       });
     }
-  }, [markerPlacementActive, markerInfo]);
+  }, [markerPlacementActive, onMarkerClick]);
+
+  useEffect(() => {
+    if (selectedMarker) {
+      const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
+      const info = markerInfo[markerKey];
+      if (info) {
+        (document.getElementById('title') as HTMLInputElement).value = info.title;
+        (document.getElementById('description') as HTMLTextAreaElement).value = info.description;
+        (document.getElementById('title') as HTMLInputElement).readOnly = true;
+        (document.getElementById('description') as HTMLTextAreaElement).readOnly = true;
+      } else {
+        (document.getElementById('title') as HTMLInputElement).value = '';
+        (document.getElementById('description') as HTMLTextAreaElement).value = '';
+        (document.getElementById('title') as HTMLInputElement).readOnly = false;
+        (document.getElementById('description') as HTMLTextAreaElement).readOnly = false;
+      }
+    }
+  }, [selectedMarker, markerInfo]);
 
   return (
     <div>
@@ -144,19 +134,14 @@ const MapComponent: React.FC = () => {
                   onClick={() => {
                     const title = (document.getElementById('title') as HTMLInputElement).value;
                     const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-                    const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
-                    setMarkerInfo(prevInfo => ({
-                      ...prevInfo,
-                      [markerKey]: { title, description }
-                    }));
-                    setSelectedMarker(null);
+                    onSaveMarkerInfo(selectedMarker, title, description);
                   }}
                 >
                   Save
                 </button>
                 <button
                   className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  onClick={() => setSelectedMarker(null)}
+                  onClick={() => onMarkerClick(null)}
                 >
                   Cancel
                 </button>
