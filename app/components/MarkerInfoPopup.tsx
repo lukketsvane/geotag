@@ -4,14 +4,14 @@ import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 
 interface MarkerInfo {
-   string;
+  title: string;
   description: string;
 }
 
 interface MarkerInfoPopupProps {
   selectedMarker: Marker;
   markerInfo: { [key: string]: MarkerInfo };
-  onSaveMarkerInfo: (marker: Marker,  string, description: string) => void;
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
   onMarkerClick: (marker: Marker | null) => void;
 }
 

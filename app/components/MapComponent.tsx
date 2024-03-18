@@ -1,5 +1,5 @@
-// app/components/MapComponent.tsx
 "use client";
+
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -30,19 +30,25 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   useEffect(() => {
     if (mapRef.current === null) {
+      const map = L.map('map', {
+        center: [0, 0],
+        zoom: 2,
+        zoomControl: true, // Disable the default zoom controls
+      });
 
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Â© OpenStreetMap contributors',
+      }).addTo(map);
 
-
-
-
+      mapRef.current = map;
 
       const customControl = L.Control.extend({
         options: {
-          position: 'topright',
+          position: 'topleft',
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
-          button.innerHTML = '📍';
+          button.innerHTML = 'ð';
           button.style.backgroundColor = 'white';
           button.style.width = '30px';
           button.style.height = '30px';
@@ -68,7 +74,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           const marker = L.marker(e.latlng, {
             icon: L.divIcon({
               className: 'emoji-icon',
-              html: '📍',
+              html: 'ð',
               iconSize: [20, 20],
             }),
           }).addTo(map);
@@ -85,7 +91,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           const marker = L.marker([lat, lng], {
             icon: L.divIcon({
               className: 'emoji-icon',
-              html: '📍',
+              html: 'ð',
               iconSize: [20, 20],
             }),
           }).addTo(map);
