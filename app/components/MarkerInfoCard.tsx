@@ -62,7 +62,7 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-600">
-                  
+                  Description:
                 </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
