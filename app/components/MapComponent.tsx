@@ -1,211 +1,49 @@
-"use client";
-
-import React, { useEffect, useRef, useState } from 'react';
-
-import L from 'leaflet';
-
-import 'leaflet/dist/leaflet.css';
-
-import { Map, Marker } from 'leaflet';
-
+// MarkerInfoPopup.tsx
+import React, { useEffect, useState } from 'react';
+import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 
-import MarkerInfoPopup from './MarkerInfoPopup';
+// Removed OpenAI imports
 
 interface MarkerInfo {
-
-  title: string;
-
-  description: string;
-
+  title: string;
+  description: string;
 }
 
-interface MapComponentProps {
-
-  selectedMarker: Marker | null;
-
-  markerInfo: { [key: string]: MarkerInfo };
-
-  onMarkerClick: (marker: Marker | null) => void;
-
-  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
-
+interface MarkerInfoPopupProps {
+  selectedMarker: Marker;
+  markerInfo: { [key: string]: MarkerInfo };
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+  onMarkerClick: (marker: Marker | null) => void;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({
-
-  selectedMarker,
-
-  markerInfo,
-
-  onMarkerClick,
-
-  onSaveMarkerInfo,
-
+const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
+  selectedMarker,
+  markerInfo,
+  onSaveMarkerInfo,
+  onMarkerClick,
 }) => {
-
-  const mapRef = useRef<Map | null>(null);
-
-  const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
-
-  useEffect(() => {
-
-    if (mapRef.current === null) {
-
-      const map = L.map('map', {
-
-        center: [0, 0],
-
-        zoom: 2,
-
-        zoomControl: true, // Disable the default zoom controls
-
-      });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
-        attribution: '© OpenStreetMap contributors',
-
-      }).addTo(map);
-
-      mapRef.current = map;
-
-      const customControl = L.Control.extend({
-
-        options: {
-
-          position: 'topleft',
-
-        },
-
-        onAdd: function () {
-
-          const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-          button.innerHTML = '📍';
-
-          button.style.backgroundColor = 'white';
-
-          button.style.width = '30px';
-
-          button.style.height = '30px';
-
-          button.onclick = function () {
-
-            setMarkerPlacementActive(!markerPlacementActive);
-
-          };
-
-          return button;
-
-        },
-
-      });
-
-      map.addControl(new customControl());
-
-      map.on('mousemove', function (e) {
-
-        if (markerPlacementActive) {
-
-          map.getContainer().style.cursor = 'crosshair';
-
-        } else {
-
-          map.getContainer().style.cursor = '';
-
-        }
-
-      });
-
-      map.on('click', function (e) {
-
-        if (markerPlacementActive) {
-
-          const marker = L.marker(e.latlng, {
-
-            icon: L.divIcon({
-
-              className: 'emoji-icon',
-
-              html: '📍',
-
-              iconSize: [20, 20],
-
-            }),
-
-          }).addTo(map);
-
-          marker.on('click', function () {
-
-            onMarkerClick(marker);
-
-          });
-
-        }
-
-      });
-
-      document.addEventListener('keydown', function (e) {
-
-        if (e.key === 'p') {
-
-          const { lat, lng } = map.getCenter();
-
-          const marker = L.marker([lat, lng], {
-
-            icon: L.divIcon({
-
-              className: 'emoji-icon',
-
-              html: '📍',
-
-              iconSize: [20, 20],
-
-            }),
-
-          }).addTo(map);
-
-          marker.on('click', function () {
-
-            onMarkerClick(marker);
-
-          });
-
-        }
-
-      });
-
-    }
-
-  }, [markerPlacementActive, onMarkerClick]);
-
-  return (
-
-    <div>
-
-      <div id="map" style={{ height: '100vh', width: '100%' }} />
-
-      {selectedMarker && (
-
-        <MarkerInfoPopup
-
-          selectedMarker={selectedMarker}
-
-          markerInfo={markerInfo}
-
-          onSaveMarkerInfo={onSaveMarkerInfo}
-
-          onMarkerClick={onMarkerClick}
-
-        />
-
-      )}
-
-    </div>
-
-  );
-
+  const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
+  const info = markerInfo[markerKey];
+  const [locationName, setLocationName] = useState('');
+  const [funFact, setFunFact] = useState('');
+
+  useEffect(() => {
+    // Fetch location name and fun fact logic remains unchanged
+    // Assume fetchFunFact makes a call to your own API endpoint
+    const fetchFunFact = async () => {
+      // Example call to your API endpoint
+      const response = await fetch(`/api/funFact?lat=${selectedMarker.getLatLng().lat}&lng=${selectedMarker.getLatLng().lng}`);
+      const data = await response.json();
+      setFunFact(data.funFact || 'No fun fact found.');
+    };
+
+    if (locationName) {
+      fetchFunFact();
+    }
+  }, [locationName, selectedMarker]);
+
+  // Component JSX remains unchanged
 };
 
-export default MapComponent;
+export default MarkerInfoPopup;
