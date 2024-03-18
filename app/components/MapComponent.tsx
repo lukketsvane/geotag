@@ -1,5 +1,5 @@
+// app/components/MapComponent.tsx
 "use client";
-
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -30,17 +30,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   useEffect(() => {
     if (mapRef.current === null) {
-      const map = L.map('map', {
-        center: [0, 0],
-        zoom: 2,
-        zoomControl: false, // Disable the default zoom controls
-      });
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(map);
 
-      mapRef.current = map;
+
+
+
 
       const customControl = L.Control.extend({
         options: {
