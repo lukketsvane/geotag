@@ -1,5 +1,5 @@
+// app/components/MapComponent.tsx
 "use client";
-
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -33,7 +33,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const map = L.map('map', {
         center: [0, 0],
         zoom: 2,
-        zoomControl: true, // Disable the default zoom controls
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -42,9 +41,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
       mapRef.current = map;
 
+      L.control.zoom({
+        position: 'topright',
+      }).addTo(map);
+
       const customControl = L.Control.extend({
         options: {
-          position: 'topleft',
+          position: 'topright',
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
@@ -101,8 +104,30 @@ const MapComponent: React.FC<MapComponentProps> = ({
           });
         }
       });
+
+      // Load saved markers from localStorage
+      const savedMarkers = JSON.parse(localStorage.getItem('markers') || '{}');
+      Object.entries(savedMarkers).forEach(([key, value]) => {
+        const [lat, lng] = key.split(',');
+        const marker = L.marker([parseFloat(lat), parseFloat(lng)], {
+          icon: L.divIcon({
+            className: 'emoji-icon',
+            html: 'ð',
+            iconSize: [20, 20],
+          }),
+        }).addTo(map);
+
+        marker.on('click', function () {
+          onMarkerClick(marker);
+        });
+      });
     }
   }, [markerPlacementActive, onMarkerClick]);
+
+  // Save marker info to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('markers', JSON.stringify(markerInfo));
+  }, [markerInfo]);
 
   return (
     <div>
