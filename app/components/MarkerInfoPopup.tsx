@@ -53,27 +53,20 @@ const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
   useEffect(() => {
     const fetchFunFact = async () => {
       try {
-        const response = await fetch('/api/funfact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            location: locationName,
-            coordinates: {
-              lat: selectedMarker.getLatLng().lat,
-              lng: selectedMarker.getLatLng().lng,
-            },
-          }),
+        const configuration = new Configuration({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
+        const openai = new OpenAIApi(configuration);
+
+        const prompt = `Tell me a fun fact about ${locationName} (${selectedMarker.getLatLng().lat}, ${selectedMarker.getLatLng().lng}).`;
+
+        const response = await openai.createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: prompt }],
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setFunFact(data.funFact);
-        } else {
-          console.error('Failed to fetch fun fact');
-          setFunFact('Fun fact fetching failed');
-        }
+        const funFact = response.data.choices[0].message?.content.trim() || '';
+        setFunFact(funFact);
       } catch (error) {
         console.error('Failed to fetch fun fact:', error);
         setFunFact('Fun fact fetching failed');
@@ -88,31 +81,31 @@ const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
         <div className="leaflet-popup-content">
           <h2 className="text-lg font-bold mb-2">{locationName}</h2>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Latitude:</p>
             <p>{selectedMarker.getLatLng().lat}</p>
           </div>
           <div className="mb-4">
-            <p className="text-gray-600"></p>
+            <p className="text-gray-600">Longitude:</p>
             <p>{selectedMarker.getLatLng().lng}</p>
           </div>
           {info ? (
             <div className="mb-4">
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Title:</p>
               <p>{info.title}</p>
-              <p className="text-gray-600"></p>
+              <p className="text-gray-600">Description:</p>
               <p>{info.description}</p>
             </div>
           ) : (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600">
-                 
+                  Title:
                 </label>
                 <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-600">
-                 
+                  Description:
                 </label>
                 <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
               </div>
