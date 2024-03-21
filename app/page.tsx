@@ -38,7 +38,7 @@ const MainPage = () => {
       [markerKey]: { title, description },
     };
     setMarkerInfo(newMarkerInfo);
-
+  
     try {
       const response = await fetch('/api/markers', {
         method: 'POST',
@@ -57,7 +57,7 @@ const MainPage = () => {
     } catch (err) {
       console.error(err);
     }
-
+  
     setSelectedMarker(null);
   };
 

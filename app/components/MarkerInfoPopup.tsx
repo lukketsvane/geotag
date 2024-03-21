@@ -1,3 +1,4 @@
+// app/components/MarkerInfoPopup.tsx
 import React, { useEffect, useState } from 'react';
 import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
@@ -11,6 +12,8 @@ const MarkerInfoPopup = ({
   const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
   const info = markerInfo[markerKey];
   const [locationName, setLocationName] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     const fetchLocationName = async () => {
@@ -30,6 +33,14 @@ const MarkerInfoPopup = ({
     }
   }, [info, onMarkerClick, selectedMarker]);
 
+  const handleSave = () => {
+    if (title.trim() !== '' && description.trim() !== '') {
+      onSaveMarkerInfo(selectedMarker, title, description);
+      setTitle('');
+      setDescription('');
+    }
+  };
+
   return (
     <div className={`leaflet-popup ${styles.infoCard}`}>
       <div className="leaflet-popup-content-wrapper">
@@ -46,19 +57,27 @@ const MarkerInfoPopup = ({
           ) : (
             <>
               <div className="mb-4">
-                <input type="text" id="title" className="w-full px-2 py-1 border rounded" placeholder="Title" />
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-2 py-1 border rounded"
+                  placeholder="Title"
+                />
               </div>
               <div className="mb-4">
-                <textarea id="description" className="w-full px-2 py-1 border rounded" placeholder="Description"></textarea>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-2 py-1 border rounded"
+                  placeholder="Description"
+                ></textarea>
               </div>
               <div className="flex justify-end">
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={() => {
-                    const title = (document.getElementById('title') as HTMLInputElement).value;
-                    const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-                    onSaveMarkerInfo(selectedMarker, title, description);
-                  }}
+                  onClick={handleSave}
+                  disabled={title.trim() === '' || description.trim() === ''}
                 >
                   Save
                 </button>
