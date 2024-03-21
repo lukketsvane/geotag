@@ -33,8 +33,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/components/MapComponent.tsx"
-, "pages/api/users/index.js"  ],
+    "app/components/MapComponent.tsx",
+    "pages/api/users/index.js",
+    "pages/api/auth/**/*.ts" // Include all TypeScript files under pages/api/auth
+  ],  
   "exclude": [
     "node_modules"
   ]

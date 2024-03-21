@@ -8,12 +8,20 @@ const LandingPage = () => {
       <p className="text-2xl mb-12 text-gray-600">
         Explore the world and share your favorite places with others.
       </p>
-      <Link
-        href="/login"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300"
-      >
-        Get Started
-      </Link>
+      <div className="flex space-x-4">
+        <Link
+          href="/login"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300"
+        >
+          Log In
+        </Link>
+        <Link
+          href="/signup"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300"
+        >
+          Sign Up
+        </Link>
+      </div>
     </div>
   );
 };
