@@ -3,35 +3,44 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import L from 'leaflet';
+
+// Assuming MarkerData is defined in a similar manner in your project
+interface MarkerData {
+  latitude: number;
+  longitude: number;
+  title?: string;
+  description?: string;
+}
 
 const MapWithNoSSR = dynamic(() => import('../components/MapComponent'), {
   ssr: false,
 });
 
 const MainPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [markerInfo, setMarkerInfo] = useState({});
-  const [markers, setMarkers] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [selectedMarker, setSelectedMarker] = useState<L.Marker | null>(null);
+  const [markerInfo, setMarkerInfo] = useState<{ [key: string]: { title: string; description: string } }>({});
+  const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
     const fetchMarkers = async () => {
       try {
         const response = await fetch('/api/markers');
-        const data = await response.json();
+        const data: MarkerData[] = await response.json();
         setMarkers(data);
       } catch (err) {
-        console.error(err);
+        console.error('Failed to fetch markers:', err);
       }
     };
     fetchMarkers();
   }, []);
 
-  const handleMarkerClick = (marker) => {
+  const handleMarkerClick = (marker: L.Marker) => {
     setSelectedMarker(marker);
   };
 
-  const handleSaveMarkerInfo = async (marker, title, description) => {
+  const handleSaveMarkerInfo = async (marker: L.Marker, title: string, description: string) => {
     const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
     const newMarkerInfo = {
       ...markerInfo,
@@ -40,7 +49,7 @@ const MainPage = () => {
     setMarkerInfo(newMarkerInfo);
 
     try {
-      const response = await fetch('/api/markers', {
+      await fetch('/api/markers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,20 +61,19 @@ const MainPage = () => {
           description,
         }),
       });
-      const data = await response.json();
-      setMarkers((prevMarkers) => [...prevMarkers, data]);
+      // Assuming the API returns the updated list of markers or the new marker itself
+      // Update your state accordingly
+      setMarkers((prevMarkers) => [...prevMarkers, { latitude: marker.getLatLng().lat, longitude: marker.getLatLng().lng, title, description }]);
     } catch (err) {
-      console.error(err);
+      console.error('Error saving marker info:', err);
     }
-
-    setSelectedMarker(null);
   };
 
   const handleSignOut = () => {
+    // Example sign-out logic
+    console.log('User signed out');
     localStorage.removeItem("username");
     localStorage.removeItem("password");
-    // Add any additional sign-out logic here
-    console.log('User signed out');
   };
 
   return (
