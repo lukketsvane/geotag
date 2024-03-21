@@ -1,4 +1,3 @@
-// app/components/MarkerInfoPopup.tsx
 import React, { useEffect, useState } from 'react';
 import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
