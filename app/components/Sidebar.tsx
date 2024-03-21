@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import UserSettings from './UserSettings';
 
-interface Geotag {
-  latitude: number;
-  longitude: number;
-  title: string;
+interface SidebarProps {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+  onSignOut: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, onSignOut }) => {
   const [showUserSettings, setShowUserSettings] = useState(false);
-  const [latestGeotags, setLatestGeotags] = useState<Geotag[]>([]);
+  const [latestGeotags, setLatestGeotags] = useState([]);
   const router = useRouter();
-
 
   const handleLogoClick = () => {
     router.push('/');
