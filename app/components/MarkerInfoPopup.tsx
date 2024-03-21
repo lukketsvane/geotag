@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 
-const MarkerInfoPopup = ({
+interface MarkerInfoPopupProps {
+  selectedMarker: Marker;
+  markerInfo: { [key: string]: { title: string; description: string } };
+  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
+  onMarkerClick: (marker: Marker | null) => void;
+}
+
+const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
   selectedMarker,
   markerInfo,
   onSaveMarkerInfo,
@@ -20,8 +27,9 @@ const MarkerInfoPopup = ({
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${selectedMarker.getLatLng().lat}&lon=${selectedMarker.getLatLng().lng}`
       );
       const data = await response.json();
-      const { country, city } = data.address;
-      setLocationName(`${city}, ${country}`);
+      // Check if data.address exists and has the properties you're looking for
+      const { country, city } = data.address ? data.address : { country: undefined, city: undefined };
+      setLocationName(`${city || 'Unknown city'}, ${country || 'Unknown country'}`);
     };
     fetchLocationName();
   }, [selectedMarker]);
