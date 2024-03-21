@@ -16,6 +16,7 @@ const MapComponent = ({
 }) => {
   const mapRef = useRef(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
+  const [temporaryMarker, setTemporaryMarker] = useState(null);
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -53,8 +54,24 @@ const MapComponent = ({
       map.on('mousemove', function (e) {
         if (markerPlacementActive) {
           map.getContainer().style.cursor = 'crosshair';
+          if (temporaryMarker) {
+            temporaryMarker.setLatLng(e.latlng);
+          } else {
+            const marker = L.marker(e.latlng, {
+              icon: L.divIcon({
+                className: 'emoji-icon',
+                html: '📍',
+                iconSize: [20, 20],
+              }),
+            });
+            setTemporaryMarker(marker.addTo(map));
+          }
         } else {
           map.getContainer().style.cursor = '';
+          if (temporaryMarker) {
+            temporaryMarker.remove();
+            setTemporaryMarker(null);
+          }
         }
       });
 
@@ -70,6 +87,11 @@ const MapComponent = ({
           marker.on('click', function () {
             onMarkerClick(marker);
           });
+          setMarkerPlacementActive(false);
+          if (temporaryMarker) {
+            temporaryMarker.remove();
+            setTemporaryMarker(null);
+          }
         }
       });
 
