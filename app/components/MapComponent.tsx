@@ -1,8 +1,12 @@
+"use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
+
+
 
 const MapComponent = ({
   selectedMarker,
@@ -11,11 +15,12 @@ const MapComponent = ({
   onMarkerClick,
   onSaveMarkerInfo,
 }) => {
-  // Update here: Specify the type of object the ref will hold (L.Map | null)
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
-  const [temporaryMarker, setTemporaryMarker] = useState<L.Marker | null>(null);
+  const [temporaryMarker, setTemporaryMarker] = useState(null);
 
+
+  
   useEffect(() => {
     if (mapRef.current === null) {
       const map = L.map('map', {
@@ -25,7 +30,7 @@ const MapComponent = ({
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
+        attribution: 'Â© OpenStreetMap contributors',
       }).addTo(map);
 
       mapRef.current = map;
@@ -36,7 +41,7 @@ const MapComponent = ({
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
-          button.innerHTML = '📍';
+          button.innerHTML = 'ð';
           button.style.backgroundColor = 'white';
           button.style.width = '30px';
           button.style.height = '30px';
@@ -57,12 +62,13 @@ const MapComponent = ({
           } else {
             const marker = L.marker(e.latlng, {
               icon: L.divIcon({
-                className: 'emoji-icon',
-                html: '📍',
+                className: 'emoji-icon', // Ensure this class is correctly defined in your CSS
+                html: `<span class="emoji-icon" style="font-size: 24px;">📍</span>`, // Adjust styling as necessary
+            
                 iconSize: [20, 20],
               }),
-            }).addTo(map);
-            setTemporaryMarker(marker);
+            });
+            setTemporaryMarker(marker.addTo(map));
           }
         } else {
           map.getContainer().style.cursor = '';
@@ -78,28 +84,52 @@ const MapComponent = ({
           const marker = L.marker(e.latlng, {
             icon: L.divIcon({
               className: 'emoji-icon',
-              html: '📍',
+              html: 'ð',
               iconSize: [20, 20],
             }),
           }).addTo(map);
-          marker.on('click', () => onMarkerClick(marker));
+          marker.on('click', function () {
+            onMarkerClick(marker);
+          });
           setMarkerPlacementActive(false);
-          setTemporaryMarker(null);
+          if (temporaryMarker) {
+            temporaryMarker.remove();
+            setTemporaryMarker(null);
+          }
         }
       });
 
-      markers.forEach((markerData) => {
-        const markerInstance = L.marker([markerData.latitude, markerData.longitude], {
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'p') {
+          const { lat, lng } = map.getCenter();
+          const marker = L.marker([lat, lng], {
+            icon: L.divIcon({
+              className: 'emoji-icon',
+              html: 'ð',
+              iconSize: [20, 20],
+            }),
+          }).addTo(map);
+          marker.on('click', function () {
+            onMarkerClick(marker);
+          });
+        }
+      });
+
+      markers.forEach((marker) => {
+        const { latitude, longitude } = marker;
+        const markerInstance = L.marker([latitude, longitude], {
           icon: L.divIcon({
             className: 'emoji-icon',
-            html: '📍',
+            html: 'ð',
             iconSize: [20, 20],
           }),
         }).addTo(map);
-        markerInstance.on('click', () => onMarkerClick(markerInstance));
+        markerInstance.on('click', function () {
+          onMarkerClick(markerInstance);
+        });
       });
     }
-  }, [markerPlacementActive, onMarkerClick, markers, temporaryMarker]);
+  }, [markerPlacementActive, onMarkerClick, markers]);
 
   return (
     <div>
