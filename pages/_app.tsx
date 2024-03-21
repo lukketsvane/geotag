@@ -1,4 +1,4 @@
-// pages/_app.tsx
+"use client";
 import { AppProps } from 'next/app';
 import { SessionProvider } from "next-auth/react";
 import '../app/globals.css'; // Adjust the path to your global styles if necessary

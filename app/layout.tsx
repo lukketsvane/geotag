@@ -14,11 +14,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         {children}
-        <footer className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white py-2 flex justify-center">
-          <Link href="/" className="hover:text-gray-400">
-            Landing Page
-          </Link>
-        </footer>
       </body>
     </html>
   )

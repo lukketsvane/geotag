@@ -1,28 +1,37 @@
-"use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
+interface MarkerData {
+  latitude: number;a
+  longitude: number;
+  title?: string;
+  description?: string;
+}
 
+interface MapComponentProps {
+  selectedMarker: L.Marker | null;
+  markerInfo: { [key: string]: { title: string; description: string } };
+  markers: MarkerData[];
+  onMarkerClick: (marker: L.Marker) => void;
+  onSaveMarkerInfo: (marker: L.Marker, title: string, description: string) => void;
+}
 
-const MapComponent = ({
+const MapComponent: React.FC<MapComponentProps> = ({
   selectedMarker,
   markerInfo,
   markers,
   onMarkerClick,
   onSaveMarkerInfo,
 }) => {
-  const mapRef = useRef(null);
-  const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
-  const [temporaryMarker, setTemporaryMarker] = useState(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const [markerPlacementActive, setMarkerPlacementActive] = useState<boolean>(false);
+  const [temporaryMarker, setTemporaryMarker] = useState<L.Marker | null>(null);
 
-
-  
   useEffect(() => {
-    if (mapRef.current === null) {
+    if (!mapRef.current) {
       const map = L.map('map', {
         center: [0, 0],
         zoom: 2,
@@ -30,7 +39,7 @@ const MapComponent = ({
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Â© OpenStreetMap contributors',
+        attribution: '© OpenStreetMap contributors',
       }).addTo(map);
 
       mapRef.current = map;
@@ -41,7 +50,7 @@ const MapComponent = ({
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
-          button.innerHTML = 'ð';
+          button.innerHTML = '📍';
           button.style.backgroundColor = 'white';
           button.style.width = '30px';
           button.style.height = '30px';
@@ -62,9 +71,8 @@ const MapComponent = ({
           } else {
             const marker = L.marker(e.latlng, {
               icon: L.divIcon({
-                className: 'emoji-icon', // Ensure this class is correctly defined in your CSS
-                html: `<span class="emoji-icon" style="font-size: 24px;">📍</span>`, // Adjust styling as necessary
-            
+                className: styles.emojiIcon,
+                html: '📍',
                 iconSize: [20, 20],
               }),
             });
@@ -83,12 +91,12 @@ const MapComponent = ({
         if (markerPlacementActive) {
           const marker = L.marker(e.latlng, {
             icon: L.divIcon({
-              className: 'emoji-icon',
-              html: 'ð',
+              className: styles.emojiIcon,
+              html: '📍',
               iconSize: [20, 20],
             }),
           }).addTo(map);
-          marker.on('click', function () {
+          marker.on('click', () => {
             onMarkerClick(marker);
           });
           setMarkerPlacementActive(false);
@@ -99,41 +107,26 @@ const MapComponent = ({
         }
       });
 
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'p') {
-          const { lat, lng } = map.getCenter();
-          const marker = L.marker([lat, lng], {
+      markers.forEach((markerData) => {
+        if (typeof markerData.latitude === 'number' && typeof markerData.longitude === 'number') {
+          const markerInstance = L.marker([markerData.latitude, markerData.longitude], {
             icon: L.divIcon({
-              className: 'emoji-icon',
-              html: 'ð',
+              className: styles.emojiIcon,
+              html: '📍',
               iconSize: [20, 20],
             }),
           }).addTo(map);
-          marker.on('click', function () {
-            onMarkerClick(marker);
+          markerInstance.on('click', () => {
+            onMarkerClick(markerInstance);
           });
         }
       });
-
-      markers.forEach((marker) => {
-        const { latitude, longitude } = marker;
-        const markerInstance = L.marker([latitude, longitude], {
-          icon: L.divIcon({
-            className: 'emoji-icon',
-            html: 'ð',
-            iconSize: [20, 20],
-          }),
-        }).addTo(map);
-        markerInstance.on('click', function () {
-          onMarkerClick(markerInstance);
-        });
-      });
     }
-  }, [markerPlacementActive, onMarkerClick, markers]);
+  }, [markerPlacementActive, onMarkerClick, markers, onSaveMarkerInfo]);
 
   return (
     <div>
-      <div id="map" style={{ height: '100vh', width: '100%' }} />
+      <div id="map" className={styles.map} />
       {selectedMarker && (
         <MarkerInfoPopup
           selectedMarker={selectedMarker}

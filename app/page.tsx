@@ -1,3 +1,4 @@
+// pages/page.tsx or pages/index.tsx (if you want this to be the homepage)
 "use client";
 import Link from "next/link";
 
@@ -8,20 +9,19 @@ const LandingPage = () => {
       <p className="text-2xl mb-12 text-gray-600">
         Explore the world and share your favorite places with others.
       </p>
-      <div className="flex space-x-4">
-        <Link
-          href="/login"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300"
-        >
-          Log In
-        </Link>
-        <Link
-          href="/signup"
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300"
-        >
-          Sign Up
-        </Link>
-      </div>
+      <Link
+        href="/login"
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 cursor-pointer"
+      >
+        Get Started
+      </Link>
+      <span className="mt-4">or</span>
+      <Link
+        href="/signup"
+        className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 cursor-pointer"
+      >
+        Sign Up
+      </Link>
     </div>
   );
 };

@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import L from 'leaflet';
 
 // Assuming MarkerData is defined in a similar manner in your project
 interface MarkerData {
@@ -61,16 +60,13 @@ const MainPage = () => {
           description,
         }),
       });
-      // Assuming the API returns the updated list of markers or the new marker itself
-      // Update your state accordingly
-      setMarkers((prevMarkers) => [...prevMarkers, { latitude: marker.getLatLng().lat, longitude: marker.getLatLng().lng, title, description }]);
+      // Refresh or update markers list as needed after saving new marker info
     } catch (err) {
       console.error('Error saving marker info:', err);
     }
   };
 
   const handleSignOut = () => {
-    // Example sign-out logic
     console.log('User signed out');
     localStorage.removeItem("username");
     localStorage.removeItem("password");
@@ -83,14 +79,14 @@ const MainPage = () => {
         toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         onSignOut={handleSignOut}
       />
-      <div className={`relative flex-grow ${sidebarOpen ? 'ml-64' : 'ml-0'} transition-margin duration-300 ease-in-out`}>
+      <div className={`flex-grow ${sidebarOpen ? 'ml-64' : 'ml-0'} transition-margin duration-300 ease-in-out`}>
         <div className="fixed bottom-0 left-0 z-50 p-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-white bg-black p-2 rounded-full"
             aria-label="Toggle Sidebar"
           >
-            {sidebarOpen ? <X color="white" size={24} /> : <Menu color="white" size={24} />}
+            {sidebarOpen ? <X size={24} color="white" /> : <Menu size={24} color="white" />}
           </button>
         </div>
         <MapWithNoSSR
@@ -106,3 +102,4 @@ const MainPage = () => {
 };
 
 export default MainPage;
+

@@ -1,6 +1,6 @@
+"use client";
 import React, { useEffect, useState } from 'react';
 import { Marker } from 'leaflet';
-import styles from './MapComponent.module.css';
 
 interface MarkerInfoCardProps {
   selectedMarker: Marker;
@@ -17,6 +17,8 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
 }) => {
   const markerKey = `${selectedMarker.getLatLng().lat},${selectedMarker.getLatLng().lng}`;
   const info = markerInfo[markerKey];
+  const [title, setTitle] = useState(info ? info.title : '');
+  const [description, setDescription] = useState(info ? info.description : '');
   const [placeInfo, setPlaceInfo] = useState<{ country: string; city: string } | null>(null);
 
   useEffect(() => {
@@ -24,72 +26,62 @@ const MarkerInfoCard: React.FC<MarkerInfoCardProps> = ({
       const { lat, lng } = selectedMarker.getLatLng();
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await response.json();
-      const country = data.address.country;
-      const city = data.address.city || data.address.town || data.address.village;
-      setPlaceInfo({ country, city });
+      if (data && data.address) {
+        const country = data.address.country;
+        const city = data.address.city || data.address.town || data.address.village;
+        setPlaceInfo({ country, city });
+      }
     };
 
     fetchPlaceInfo();
   }, [selectedMarker]);
 
   return (
-    <div className={`leaflet-popup ${styles.infoCard}`}>
-      <div className="leaflet-popup-content-wrapper">
-        <div className="leaflet-popup-content">
-          <h2 className="text-lg font-bold mb-2">Marker Information</h2>
-          <div className="mb-4">
-            <p className="text-gray-600"></p>
-            <p>{selectedMarker.getLatLng().lat}</p>
-          </div>
-          <div className="mb-4">
-            <p className="text-gray-600"></p>
-            <p>{selectedMarker.getLatLng().lng}</p>
-          </div>
-          {info ? (
-            <div className="mb-4">
-              <p className="text-gray-600"></p>
-              <p>{info.title}</p>
-              <p className="text-gray-600"></p>
-              <p>{info.description}</p>
-            </div>
-          ) : (
-            <>
-              <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-600">
-                  
-                </label>
-                <input type="text" id="title" className="w-full px-2 py-1 border rounded" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-gray-600">
-                  
-                </label>
-                <textarea id="description" className="w-full px-2 py-1 border rounded"></textarea>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={() => {
-                    const title = (document.getElementById('title') as HTMLInputElement).value;
-                    const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-                    onSaveMarkerInfo(selectedMarker, title, description);
-                  }}
-                >
-                  Save
-                </button>
-                <button
-                  className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  onClick={() => onMarkerClick(null)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+    <div className="leaflet-popup p-4 bg-white rounded-lg shadow">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold mb-2">Marker Information</h2>
+        {placeInfo && (
+          <p className="mb-2 text-gray-800">Location: {placeInfo.city}, {placeInfo.country}</p>
+        )}
+        <p className="text-gray-800">Latitude: {selectedMarker.getLatLng().lat}</p>
+        <p className="text-gray-800">Longitude: {selectedMarker.getLatLng().lng}</p>
       </div>
-      <div className="leaflet-popup-tip-container">
-        <div className="leaflet-popup-tip"></div>
+      <div className="mb-4">
+        <label htmlFor="title" className="block text-gray-600 mb-2">Title:</label>
+        <input
+          type="text"
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-blue-300"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="description" className="block text-gray-600 mb-2">Description:</label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-blue-300"
+          rows={3}
+        ></textarea>
+      </div>
+      <div className="flex justify-end space-x-2">
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-blue-300"
+          onClick={() => {
+            onSaveMarkerInfo(selectedMarker, title, description);
+            onMarkerClick(null); // Optionally close the card after saving
+          }}
+        >
+          Save
+        </button>
+        <button
+          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-gray-400"
+          onClick={() => onMarkerClick(null)}
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );

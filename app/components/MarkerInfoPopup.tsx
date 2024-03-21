@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Marker } from 'leaflet';
-import styles from './MapComponent.module.css';
 
-interface MarkerInfoPopupProps {
-  selectedMarker: Marker;
-  markerInfo: { [key: string]: { title: string; description: string } };
-  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
-  onMarkerClick: (marker: Marker | null) => void;
-}
-
-const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
+const MarkerInfoPopup = ({
   selectedMarker,
   markerInfo,
   onSaveMarkerInfo,
@@ -27,80 +19,65 @@ const MarkerInfoPopup: React.FC<MarkerInfoPopupProps> = ({
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${selectedMarker.getLatLng().lat}&lon=${selectedMarker.getLatLng().lng}`
       );
       const data = await response.json();
-      // Check if data.address exists and has the properties you're looking for
-      const { country, city } = data.address ? data.address : { country: undefined, city: undefined };
-      setLocationName(`${city || 'Unknown city'}, ${country || 'Unknown country'}`);
+      const locationDetails = data.address;
+      const country = locationDetails.country;
+      const city = locationDetails.city || locationDetails.town || locationDetails.village;
+      setLocationName(`${city}, ${country}`);
     };
     fetchLocationName();
   }, [selectedMarker]);
 
   useEffect(() => {
-    if (!info) {
-      onMarkerClick(selectedMarker);
+    if (info) {
+      setTitle(info.title);
+      setDescription(info.description);
     }
-  }, [info, onMarkerClick, selectedMarker]);
+  }, [info]);
 
   const handleSave = () => {
     if (title.trim() !== '' && description.trim() !== '') {
       onSaveMarkerInfo(selectedMarker, title, description);
-      setTitle('');
-      setDescription('');
     }
   };
 
   return (
-    <div className={`leaflet-popup ${styles.infoCard}`}>
-      <div className="leaflet-popup-content-wrapper">
-        <div className="leaflet-popup-content">
-          <h2 className="text-lg font-bold mb-2">{locationName}</h2>
-          <div className="mb-4">
-            <p>{selectedMarker.getLatLng().lat}, {selectedMarker.getLatLng().lng}</p>
-          </div>
-          {info ? (
-            <div className="mb-4">
-              <p>{info.title}</p>
-              <p>{info.description}</p>
-            </div>
-          ) : (
-            <>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-2 py-1 border rounded"
-                  placeholder="Title"
-                />
-              </div>
-              <div className="mb-4">
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-2 py-1 border rounded"
-                  placeholder="Description"
-                ></textarea>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={handleSave}
-                  disabled={title.trim() === '' || description.trim() === ''}
-                >
-                  Save
-                </button>
-                <button
-                  className="ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  onClick={() => onMarkerClick(null)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+    <div className="bg-white rounded-lg shadow-xl p-4 max-w-md mx-auto">
+      <h2 className="text-xl font-semibold mb-4">{locationName || 'Location Details'}</h2>
+      <div className="mb-4">
+        <p className="text-sm text-gray-700">{selectedMarker.getLatLng().lat}, {selectedMarker.getLatLng().lng}</p>
       </div>
-      <div className="leaflet-popup-tip-container">
-        <div className="leaflet-popup-tip"></div>
+      <div className="mb-4">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Title"
+        />
+      </div>
+      <div className="mb-4">
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Description"
+          rows={3}
+        ></textarea>
+      </div>
+      <div className="flex justify-end space-x-2">
+        <button
+          className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          onClick={handleSave}
+          disabled={title.trim() === '' || description.trim() === ''}
+        >
+          Save
+        </button>
+        <button
+          className="px-4 py-2 text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          onClick={() => onMarkerClick(null)}
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
