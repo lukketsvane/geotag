@@ -1,16 +1,25 @@
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import tapet from '../public/tapet.png'; // Adjust the path as necessary
+import tapet from '../public/tapet.png'; // Adjust this path as necessary
 
 const LoginPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Redirect to map if already logged in
+    if (session) {
+      router.replace('/map');
+    }
+  }, [session, router]);
+
   const [credentials, setCredentials] = useState({
     username: '',
     password: '',
   });
   const [loginError, setLoginError] = useState('');
-  const router = useRouter();
 
   const handleChange = (e) => {
     setCredentials({
@@ -30,10 +39,15 @@ const LoginPage = () => {
     if (result?.error) {
       setLoginError('Login failed. Please check your credentials and try again.');
     } else {
-      // Redirect to the homepage or user dashboard after successful login
-      router.push('/');
+      // Assuming '/map' is the route for your map page
+      router.replace('/map');
     }
   };
+
+  // Prevent the login form from being displayed while checking for an active session
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">

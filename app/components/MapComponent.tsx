@@ -1,8 +1,6 @@
-"use client";
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
@@ -13,9 +11,10 @@ const MapComponent = ({
   onMarkerClick,
   onSaveMarkerInfo,
 }) => {
-  const mapRef = useRef(null);
+  // Update here: Specify the type of object the ref will hold (L.Map | null)
+  const mapRef = useRef<L.Map | null>(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
-  const [temporaryMarker, setTemporaryMarker] = useState(null);
+  const [temporaryMarker, setTemporaryMarker] = useState<L.Marker | null>(null);
 
   useEffect(() => {
     if (mapRef.current === null) {
@@ -62,8 +61,8 @@ const MapComponent = ({
                 html: '📍',
                 iconSize: [20, 20],
               }),
-            });
-            setTemporaryMarker(marker.addTo(map));
+            }).addTo(map);
+            setTemporaryMarker(marker);
           }
         } else {
           map.getContainer().style.cursor = '';
@@ -83,48 +82,24 @@ const MapComponent = ({
               iconSize: [20, 20],
             }),
           }).addTo(map);
-          marker.on('click', function () {
-            onMarkerClick(marker);
-          });
+          marker.on('click', () => onMarkerClick(marker));
           setMarkerPlacementActive(false);
-          if (temporaryMarker) {
-            temporaryMarker.remove();
-            setTemporaryMarker(null);
-          }
+          setTemporaryMarker(null);
         }
       });
 
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'p') {
-          const { lat, lng } = map.getCenter();
-          const marker = L.marker([lat, lng], {
-            icon: L.divIcon({
-              className: 'emoji-icon',
-              html: '📍',
-              iconSize: [20, 20],
-            }),
-          }).addTo(map);
-          marker.on('click', function () {
-            onMarkerClick(marker);
-          });
-        }
-      });
-
-      markers.forEach((marker) => {
-        const { latitude, longitude } = marker;
-        const markerInstance = L.marker([latitude, longitude], {
+      markers.forEach((markerData) => {
+        const markerInstance = L.marker([markerData.latitude, markerData.longitude], {
           icon: L.divIcon({
             className: 'emoji-icon',
             html: '📍',
             iconSize: [20, 20],
           }),
         }).addTo(map);
-        markerInstance.on('click', function () {
-          onMarkerClick(markerInstance);
-        });
+        markerInstance.on('click', () => onMarkerClick(markerInstance));
       });
     }
-  }, [markerPlacementActive, onMarkerClick, markers]);
+  }, [markerPlacementActive, onMarkerClick, markers, temporaryMarker]);
 
   return (
     <div>
