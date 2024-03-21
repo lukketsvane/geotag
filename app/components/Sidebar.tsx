@@ -12,6 +12,7 @@ interface Geotag {
 const Sidebar = ({ isOpen, toggleSidebar, onSignOut }) => {
   const [showLatestTags, setShowLatestTags] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
+<<<<<<< HEAD
   const { data: session } = useSession(); // Use the useSession hook to access session data
   const [latestGeotags, setLatestGeotags] = useState<Geotag[]>([]); // Assuming this state will store geotags data
 
@@ -20,6 +21,29 @@ const Sidebar = ({ isOpen, toggleSidebar, onSignOut }) => {
     // This should be replaced with actual fetching logic
     // For example, setLatestGeotags(fetchLatestGeotags());
   }, []);
+=======
+  const [latestGeotags, setLatestGeotags] = useState<Geotag[]>([]);
+  const router = useRouter();
+
+
+  const handleLogoClick = () => {
+    router.push('/');
+  };
+
+  const toggleUserSettings = () => {
+    setShowUserSettings(!showUserSettings);
+  };
+
+  const fetchLatestGeotags = async () => {
+    try {
+      const response = await fetch('/api/markers?limit=5');
+      const data = await response.json();
+      setLatestGeotags(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+>>>>>>> bef70be (Revert " yes")
 
   return (
     <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
