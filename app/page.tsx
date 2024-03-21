@@ -1,10 +1,8 @@
-// app/page.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar';
-import axios from 'axios';
 
 const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
@@ -19,8 +17,9 @@ const MainPage = () => {
   useEffect(() => {
     const fetchMarkers = async () => {
       try {
-        const response = await axios.get('/api/markers');
-        setMarkers(response.data);
+        const response = await fetch('/api/markers');
+        const data = await response.json();
+        setMarkers(data);
       } catch (err) {
         console.error(err);
       }
@@ -41,12 +40,20 @@ const MainPage = () => {
     setMarkerInfo(newMarkerInfo);
 
     try {
-      await axios.post('/api/markers', {
-        latitude: marker.getLatLng().lat,
-        longitude: marker.getLatLng().lng,
-        title,
-        description,
+      const response = await fetch('/api/markers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          latitude: marker.getLatLng().lat,
+          longitude: marker.getLatLng().lng,
+          title,
+          description,
+        }),
       });
+      const data = await response.json();
+      setMarkers((prevMarkers) => [...prevMarkers, data]);
     } catch (err) {
       console.error(err);
     }
