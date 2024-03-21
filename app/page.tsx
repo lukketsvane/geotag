@@ -1,41 +1,60 @@
+// app/page.tsx
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar';
-import L, { Marker } from 'leaflet';
+import axios from 'axios';
 
 const MapWithNoSSR = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
 });
 
-interface MarkerInfo {
-  [key: string]: {
-    title: string;
-    description: string;
-  };
-}
-
 const MainPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
-  const [markerInfo, setMarkerInfo] = useState<MarkerInfo>({});
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [markerInfo, setMarkerInfo] = useState({});
+  const [markers, setMarkers] = useState([]);
 
-  const handleMarkerClick = (marker: Marker) => {
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      try {
+        const response = await axios.get('/api/markers');
+        setMarkers(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMarkers();
+  }, []);
+
+  const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
   };
 
-  const handleSaveMarkerInfo = (marker: Marker, title: string, description: string) => {
+  const handleSaveMarkerInfo = async (marker, title, description) => {
     const markerKey = `${marker.getLatLng().lat},${marker.getLatLng().lng}`;
-    setMarkerInfo((prevInfo) => ({
-      ...prevInfo,
+    const newMarkerInfo = {
+      ...markerInfo,
       [markerKey]: { title, description },
-    }));
+    };
+    setMarkerInfo(newMarkerInfo);
+
+    try {
+      await axios.post('/api/markers', {
+        latitude: marker.getLatLng().lat,
+        longitude: marker.getLatLng().lng,
+        title,
+        description,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
     setSelectedMarker(null);
   };
 
   const handleSignOut = () => {
-    // Add your sign-out logic here
     console.log('User signed out');
   };
 
@@ -59,6 +78,7 @@ const MainPage = () => {
         <MapWithNoSSR
           selectedMarker={selectedMarker}
           markerInfo={markerInfo}
+          markers={markers}
           onMarkerClick={handleMarkerClick}
           onSaveMarkerInfo={handleSaveMarkerInfo}
         />

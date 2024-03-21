@@ -1,5 +1,5 @@
+// app/components/MapComponent.tsx
 "use client";
-
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -7,25 +7,14 @@ import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
-interface MarkerInfo {
-  title: string;
-  description: string;
-}
-
-interface MapComponentProps {
-  selectedMarker: Marker | null;
-  markerInfo: { [key: string]: MarkerInfo };
-  onMarkerClick: (marker: Marker | null) => void;
-  onSaveMarkerInfo: (marker: Marker, title: string, description: string) => void;
-}
-
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapComponent = ({
   selectedMarker,
   markerInfo,
+  markers,
   onMarkerClick,
   onSaveMarkerInfo,
 }) => {
-  const mapRef = useRef<Map | null>(null);
+  const mapRef = useRef(null);
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
 
   useEffect(() => {
@@ -33,11 +22,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const map = L.map('map', {
         center: [0, 0],
         zoom: 2,
-        zoomControl: true, // Disable the default zoom controls
+        zoomControl: true,
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Â© OpenStreetMap contributors',
+        attribution: '© OpenStreetMap contributors',
       }).addTo(map);
 
       mapRef.current = map;
@@ -48,7 +37,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         },
         onAdd: function () {
           const button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
-          button.innerHTML = 'ð';
+          button.innerHTML = '📍';
           button.style.backgroundColor = 'white';
           button.style.width = '30px';
           button.style.height = '30px';
@@ -74,11 +63,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
           const marker = L.marker(e.latlng, {
             icon: L.divIcon({
               className: 'emoji-icon',
-              html: 'ð',
+              html: '📍',
               iconSize: [20, 20],
             }),
           }).addTo(map);
-
           marker.on('click', function () {
             onMarkerClick(marker);
           });
@@ -91,18 +79,31 @@ const MapComponent: React.FC<MapComponentProps> = ({
           const marker = L.marker([lat, lng], {
             icon: L.divIcon({
               className: 'emoji-icon',
-              html: 'ð',
+              html: '📍',
               iconSize: [20, 20],
             }),
           }).addTo(map);
-
           marker.on('click', function () {
             onMarkerClick(marker);
           });
         }
       });
+
+      markers.forEach((marker) => {
+        const { latitude, longitude } = marker;
+        const markerInstance = L.marker([latitude, longitude], {
+          icon: L.divIcon({
+            className: 'emoji-icon',
+            html: '📍',
+            iconSize: [20, 20],
+          }),
+        }).addTo(map);
+        markerInstance.on('click', function () {
+          onMarkerClick(markerInstance);
+        });
+      });
     }
-  }, [markerPlacementActive, onMarkerClick]);
+  }, [markerPlacementActive, onMarkerClick, markers]);
 
   return (
     <div>
