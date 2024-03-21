@@ -6,6 +6,8 @@ import { Map, Marker } from 'leaflet';
 import styles from './MapComponent.module.css';
 import MarkerInfoPopup from './MarkerInfoPopup';
 
+
+
 const MapComponent = ({
   selectedMarker,
   markerInfo,
@@ -17,6 +19,8 @@ const MapComponent = ({
   const [markerPlacementActive, setMarkerPlacementActive] = useState(false);
   const [temporaryMarker, setTemporaryMarker] = useState(null);
 
+
+  
   useEffect(() => {
     if (mapRef.current === null) {
       const map = L.map('map', {
@@ -58,8 +62,9 @@ const MapComponent = ({
           } else {
             const marker = L.marker(e.latlng, {
               icon: L.divIcon({
-                className: 'emoji-icon',
-                html: 'ð',
+                className: 'emoji-icon', // Ensure this class is correctly defined in your CSS
+                html: `<span class="emoji-icon" style="font-size: 24px;">📍</span>`, // Adjust styling as necessary
+            
                 iconSize: [20, 20],
               }),
             });
